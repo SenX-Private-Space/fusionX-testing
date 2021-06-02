@@ -4325,7 +4325,9 @@ static inline unsigned long task_runnable(struct task_struct *p)
 
 static inline unsigned long _task_util_est(struct task_struct *p)
 {
-	return READ_ONCE(p->se.avg.util_est) & ~UTIL_AVG_UNCHANGED;
+	struct util_est ue = READ_ONCE(p->se.avg.util_est);
+
+	return (max(ue.ewma, ue.enqueued) | UTIL_AVG_UNCHANGED);
 }
 
 unsigned long task_util_est(struct task_struct *p)
@@ -4415,9 +4417,12 @@ static inline void util_est_update(struct cfs_rq *cfs_rq,
 	 * Reset EWMA on utilization increases, the moving average is used only
 	 * to smooth utilization decreases.
 	 */
-	if (ewma <= dequeued) {
-		ewma = dequeued;
-		goto done;
+	ue.enqueued = (task_util(p) | UTIL_AVG_UNCHANGED);
+	if (sched_feat(UTIL_EST_FASTUP)) {
+		if (ue.ewma < ue.enqueued) {
+			ue.ewma = ue.enqueued;
+			goto done;
+		}
 	}
 
 	/*
@@ -4456,8 +4461,7 @@ static inline void util_est_update(struct cfs_rq *cfs_rq,
 	ewma  -= last_ewma_diff;
 	ewma >>= UTIL_EST_WEIGHT_SHIFT;
 done:
-	ewma |= UTIL_AVG_UNCHANGED;
-	WRITE_ONCE(p->se.avg.util_est, ewma);
+	WRITE_ONCE(p->se.avg.util_est, ue);
 
 	/* Update plots for Task's estimated utilization */
 	trace_sched_util_est_task(p, &p->se.avg);

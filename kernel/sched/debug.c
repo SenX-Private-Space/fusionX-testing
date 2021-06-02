@@ -817,7 +817,8 @@ void proc_sched_show_task(struct task_struct *p, struct pid_namespace *ns,
 	P(se.avg.runnable_avg);
 	P(se.avg.util_avg);
 	P(se.avg.last_update_time);
-	PM(se.avg.util_est, ~UTIL_AVG_UNCHANGED);
+	P(se.avg.util_est.ewma);
+	PM(se.avg.util_est.enqueued, ~UTIL_AVG_UNCHANGED);
 #endif
 	P(policy);
 	P(prio);

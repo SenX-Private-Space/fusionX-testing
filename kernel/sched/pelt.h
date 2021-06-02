@@ -52,7 +52,7 @@ static inline void cfs_se_util_change(struct sched_avg *avg)
 		return;
 
 	/* Avoid store if the flag has been already reset */
-	enqueued = avg->util_est;
+	enqueued = avg->util_est.enqueued;
 	if (!(enqueued & UTIL_AVG_UNCHANGED))
 		return;
 
