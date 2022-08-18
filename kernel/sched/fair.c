@@ -4257,7 +4257,7 @@ static inline void update_load_avg(struct cfs_rq *cfs_rq, struct sched_entity *s
 		 * and we are migrating task out of the CPU.
 		 */
 		detach_entity_load_avg(cfs_rq, se);
-		update_tg_load_avg(cfs_rq);
+		update_tg_load_avg(cfs_rq, 0);
 	} else if (decayed) {
 		cfs_rq_util_change(cfs_rq, 0);
 
@@ -5004,6 +5004,9 @@ dequeue_entity(struct cfs_rq *cfs_rq, struct sched_entity *se, int flags)
 {
 	bool sleep = flags & DEQUEUE_SLEEP;
 	int action = UPDATE_TG;
+
+	if (entity_is_task(se) && task_on_rq_migrating(task_of(se)))
+		action |= DO_DETACH;
 
 	update_curr(cfs_rq);
 	clear_buddies(cfs_rq, se);
