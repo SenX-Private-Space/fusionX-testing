@@ -1222,12 +1222,11 @@ static inline void asym_cpu_capacity_update_data(int cpu)
 	unsigned long capacity = arch_scale_cpu_capacity(cpu);
 	struct asym_cap_data *insert_entry = NULL;
 	struct asym_cap_data *entry;
- 
+
 	/*
 	 * Search if capacity already exits. If not, track which the entry
 	 * where we should insert to keep the list ordered descendingly.
 	 */
-
 	list_for_each_entry(entry, &asym_cap_list, link) {
 		if (capacity == entry->capacity)
 			goto done;
