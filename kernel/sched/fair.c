@@ -4675,9 +4675,9 @@ static inline void adjust_cpus_for_packing(struct task_struct *p,
 
 static inline void update_misfit_status(struct task_struct *p, struct rq *rq)
 {
-	int cpu = cpu_of(rq);
+        int cpu = cpu_of(rq);
 
-	if (!sched_asym_cpucap_active())
+	if (!static_branch_unlikely(&sched_asym_cpucapacity))
 		return;
 
 	/*
@@ -8324,7 +8324,7 @@ static void set_task_max_allowed_capacity(struct task_struct *p)
 {
 	struct asym_cap_data *entry;
 
-	if (!sched_asym_cpucap_active())
+	if (!static_branch_unlikely(&sched_asym_cpucapacity))
 		return;
 
 	rcu_read_lock();
