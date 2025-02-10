@@ -9384,6 +9384,7 @@ int can_migrate_task(struct task_struct *p, struct lb_env *env)
 
 	if (!cpumask_test_cpu(env->dst_cpu, &p->cpus_allowed)) {
 		int cpu;
+		cpumask_t tmpmask;
 
 		schedstat_inc(p->se.statistics.nr_failed_migrations_affine);
 
