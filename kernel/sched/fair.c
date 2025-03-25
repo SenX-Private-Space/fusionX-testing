@@ -4388,14 +4388,6 @@ static inline void util_est_update(struct cfs_rq *cfs_rq,
 	 * To avoid underestimate of task utilization, skip updates of EWMA if
 	 * we cannot grant that thread got all CPU time it wanted.
 	 */
-	if ((ue.enqueued + UTIL_EST_MARGIN) < task_runnable(p))
-		goto done;
-
-
-	/*
-	 * To avoid underestimate of task utilization, skip updates of EWMA if
-	 * we cannot grant that thread got all CPU time it wanted.
-	 */
 	if ((dequeued + UTIL_EST_MARGIN) < task_runnable(p))
 		goto done;
 
